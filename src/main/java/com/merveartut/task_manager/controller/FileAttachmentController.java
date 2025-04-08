@@ -7,7 +7,9 @@ import com.merveartut.task_manager.service.exception.TaskNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,16 @@ public class FileAttachmentController {
     @Autowired
     public FileAttachmentController(FileAttachmentService fileAttachmentService) {
         this.fileAttachmentService = fileAttachmentService;
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<FileAttachment> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam UUID taskId,
+            @RequestParam UUID userId) throws IOException {
+
+        FileAttachment savedAttachment = fileAttachmentService.uploadFile(file, taskId, userId);
+        return ResponseEntity.ok(savedAttachment);
     }
 
     @PostMapping("/v1")

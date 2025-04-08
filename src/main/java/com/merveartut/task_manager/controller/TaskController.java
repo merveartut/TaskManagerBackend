@@ -29,6 +29,7 @@ public class TaskController {
     @PostMapping("/v1")
     @PreAuthorize("hasRole('PROJECT_MANAGER')")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        System.out.println("rGJUGBJBGJBJB" + task);
        return ResponseEntity.ok(taskService.createTask(task));
     }
 

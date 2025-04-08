@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll() // Allow login without authentication
                         .requestMatchers("/api/users/v1/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/v1/project/{projectId}").hasAnyRole("PROJECT_MANAGER", "TEAM_LEADER")
+                        .requestMatchers(HttpMethod.GET,"/api/tasks/v1/project/{projectId}").hasAnyRole("PROJECT_MANAGER", "TEAM_LEADER", "TEAM_MEMBER")
                         .requestMatchers(HttpMethod.GET,"/api/tasks/v1").hasRole("PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.GET,"/api/tasks/v1/task/{id}").hasAnyRole("PROJECT_MANAGER","TEAM_LEADER","TEAM_MEMBER")
 
