@@ -27,7 +27,7 @@ public interface TaskService {
 
     List<Task> getTasksByAssignee(UUID userId);
 
-    Task updateTask(UUID id, Task task) throws TaskNotFoundException;
+    Task updateTask(Task task) throws TaskNotFoundException;
 
     Task setTaskState(UUID id, TaskState state, String reason) throws TaskNotFoundException;
 

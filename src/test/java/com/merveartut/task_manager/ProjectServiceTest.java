@@ -104,7 +104,7 @@ public class ProjectServiceTest {
         when(projectRepository.existsById(projectId)).thenReturn(true);
         when(projectRepository.save(project)).thenReturn(project);
 
-        Project updatedProject = projectService.updateProject(projectId, project);
+        Project updatedProject = projectService.updateProject(project);
 
         assertNotNull(updatedProject);
         assertEquals(project.getId(), updatedProject.getId());
@@ -115,7 +115,7 @@ public class ProjectServiceTest {
     void testUpdateProject_ProjectNotFound() {
         when(projectRepository.existsById(projectId)).thenReturn(false);
 
-        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(projectId, project));
+        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(project));
         verify(projectRepository, times(1)).existsById(projectId);
     }
 

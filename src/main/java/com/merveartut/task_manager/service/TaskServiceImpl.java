@@ -89,8 +89,8 @@ public class TaskServiceImpl implements TaskService{
 
 
     @Override
-    public Task updateTask(UUID id, Task task) {
-        if (!taskRepository.existsById(id)) {
+    public Task updateTask(Task task) {
+        if (!taskRepository.existsById(task.getId())) {
             throw new TaskNotFoundException();
         }
         return taskRepository.save(task);

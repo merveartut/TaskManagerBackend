@@ -142,7 +142,7 @@ public class ProjectControllerTest {
     void updateProject_Success() throws Exception {
         project.setTitle("Updated Project");
 
-        when(projectService.updateProject(projectId, project)).thenReturn(project);
+        when(projectService.updateProject(project)).thenReturn(project);
 
         mockMvc.perform(put("/api/projects/v1/{id}", projectId)
                         .header("Authorization", projectManagerToken)
@@ -153,7 +153,7 @@ public class ProjectControllerTest {
     @Test
     public void updateProject_ProjectNotFound() throws Exception {
         UUID invalidId = UUID.randomUUID();
-        when(projectService.updateProject(any(UUID.class), any(Project.class))).thenThrow(new ProjectNotFoundException());
+        when(projectService.updateProject(any(Project.class))).thenThrow(new ProjectNotFoundException());
 
         mockMvc.perform(put("/api/projects/v1/"+ invalidId)
                         .header("Authorization", projectManagerToken)

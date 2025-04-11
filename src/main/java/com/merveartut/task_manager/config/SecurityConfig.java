@@ -52,12 +52,15 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST,"/api/tasks/**").hasRole("PROJECT_MANAGER")
 
+                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/update").hasRole("PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/set-assignee").hasRole("TEAM_LEADER")
                         .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-state").hasAnyRole("TEAM_LEADER","TEAM_MEMBER")
                         .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-priority").hasAnyRole("TEAM_LEADER","PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.PUT,"/api/tasks/**").hasRole("PROJECT_MANAGER")
 
-                        .requestMatchers("/api/projects/**").hasRole("PROJECT_MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/projects/v1/team-members").permitAll()
+                        .requestMatchers("/api/projects/**").permitAll()
+
 
 
                         .requestMatchers(HttpMethod.POST,"/api/comments/v1/add-comment").permitAll()
@@ -66,6 +69,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/task").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/**").hasRole("PROJECT_MANAGER")
                         .requestMatchers("/api/attachments/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/projects/v1").hasRole("PROJECT_MANAGER")
+                        .requestMatchers("/api/attachments/files/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

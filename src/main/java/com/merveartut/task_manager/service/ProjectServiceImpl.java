@@ -2,8 +2,11 @@ package com.merveartut.task_manager.service;
 
 import com.merveartut.task_manager.enums.ProjectStatus;
 import com.merveartut.task_manager.model.Project;
+import com.merveartut.task_manager.model.Task;
+import com.merveartut.task_manager.model.User;
 import com.merveartut.task_manager.repository.ProjectRepository;
 import com.merveartut.task_manager.service.exception.ProjectNotFoundException;
+import com.merveartut.task_manager.service.exception.TaskNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,11 +38,17 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public Project updateProject(UUID id, Project project) throws ProjectNotFoundException{
-        if (!projectRepository.existsById(id)) {
+    public Project updateProject(Project project) throws ProjectNotFoundException{
+        if (!projectRepository.existsById(project.getId())) {
             throw new ProjectNotFoundException();
         }
         return projectRepository.save(project);
     }
 
+    @Override
+    public List<User> getProjectTeamMembers(UUID id) throws ProjectNotFoundException{
+        Project project = projectRepository.findById(id)
+                .orElseThrow(ProjectNotFoundException::new);
+        return project.getTeamMembers();
+    }
 }

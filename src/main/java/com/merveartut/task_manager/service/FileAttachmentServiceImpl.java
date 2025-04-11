@@ -53,7 +53,8 @@ public class FileAttachmentServiceImpl implements FileAttachmentService{
         }
 
         // Generate unique filename
-        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        //String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String uniqueFileName = file.getOriginalFilename();
         Path filePath = uploadDir.resolve(uniqueFileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

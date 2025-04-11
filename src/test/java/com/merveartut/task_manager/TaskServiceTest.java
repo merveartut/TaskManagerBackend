@@ -214,7 +214,7 @@ public class TaskServiceTest {
         when(taskRepository.existsById(taskId)).thenReturn(true);
         when(taskRepository.save(task)).thenReturn(task);
 
-        Task updatedTask = taskService.updateTask(taskId, task);
+        Task updatedTask = taskService.updateTask(task);
 
         assertNotNull(updatedTask);
         verify(taskRepository, times(1)).save(task);
@@ -224,7 +224,7 @@ public class TaskServiceTest {
     void updateTask_NotFound() {
         when(taskRepository.existsById(taskId)).thenReturn(false);
 
-        assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(taskId, task));
+        assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(task));
 
         verify(taskRepository, never()).save(any());
     }

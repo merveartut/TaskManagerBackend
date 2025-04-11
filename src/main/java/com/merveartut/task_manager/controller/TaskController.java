@@ -57,6 +57,13 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTaskState(id));
     }
 
+    @PutMapping("/v1/update")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    public ResponseEntity<Task> updateTask (@RequestBody Task task) {
+        return ResponseEntity.ok(taskService.updateTask(task));
+    }
+
+
     @PutMapping("/v1/set-assignee")
     @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
     public ResponseEntity<Task> setTaskAssignee (@RequestParam UUID id, @RequestParam UUID userId) {

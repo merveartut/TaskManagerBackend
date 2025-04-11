@@ -1,6 +1,7 @@
 package com.merveartut.task_manager.controller;
 
 import com.merveartut.task_manager.model.Project;
+import com.merveartut.task_manager.model.User;
 import com.merveartut.task_manager.service.ProjectService;
 import com.merveartut.task_manager.service.exception.ProjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,16 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
+    @GetMapping("/v1/team-members")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    public ResponseEntity<List<User>> getProjectTeamMembers(@RequestParam UUID id) {
+        return ResponseEntity.ok(projectService.getProjectTeamMembers(id));
+    }
 
-
-    @PutMapping("/v1/{id}")
+    @PutMapping("/v1")
     @PreAuthorize("hasRole('PROJECT_MANAGER')")
-    public ResponseEntity<Project> updateProject(@PathVariable UUID id, @RequestBody Project project) {
-        return ResponseEntity.ok(projectService.updateProject(id, project));
+    public ResponseEntity<Project> updateProject(@RequestBody Project project) {
+        return ResponseEntity.ok(projectService.updateProject(project));
     }
 
     @ExceptionHandler(ProjectNotFoundException.class)
