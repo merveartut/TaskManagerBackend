@@ -1,5 +1,8 @@
 package com.merveartut.task_manager.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.merveartut.task_manager.enums.TaskPriority;
 import com.merveartut.task_manager.enums.TaskState;
 import jakarta.persistence.*;
@@ -38,12 +41,15 @@ public class Task {
     @ManyToOne
     private User assignee;
 
-    @ManyToOne
     @NotNull
+    @ManyToOne
     private Project project;
 
     @OneToMany
     private List<Comment> comments;
+
+    @OneToMany
+    private List<Todo> todos;
 
     private String reason;
 

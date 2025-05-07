@@ -1,5 +1,6 @@
 package com.merveartut.task_manager.service;
 
+import com.merveartut.task_manager.enums.Role;
 import com.merveartut.task_manager.enums.TaskPriority;
 import com.merveartut.task_manager.enums.TaskState;
 import com.merveartut.task_manager.model.Project;
@@ -12,6 +13,10 @@ import com.merveartut.task_manager.service.exception.NotAllowedStateException;
 import com.merveartut.task_manager.service.exception.ProjectNotFoundException;
 import com.merveartut.task_manager.service.exception.TaskNotFoundException;
 import com.merveartut.task_manager.service.exception.UserNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,15 +36,54 @@ public class TaskServiceImpl implements TaskService{
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
     }
+
+    public UUID getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+
+        String userId = (String) authentication.getDetails();  // This is where we stored the userId
+        return UUID.fromString(userId);
+    }
+
+    public Role getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+
+        String roleStr = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority) // e.g., "ROLE_ADMIN"
+                .findFirst()
+                .orElseThrow(() -> new AccessDeniedException("No role assigned"));
+
+        return Role.valueOf(roleStr.replace("ROLE_", "")); // Convert back to your enum
+    }
+
     @Override
     public Task createTask(Task task) throws ProjectNotFoundException, UserNotFoundException{
-        Project project = projectRepository.findById(task.getProject().getId())
-                .orElseThrow(() -> new ProjectNotFoundException());
+        Project existingProject = projectRepository.findById(task.getProject().getId())
+                .orElseThrow(ProjectNotFoundException::new);
+
         User assignee = userRepository.findById(task.getAssignee().getId())
                         .orElseThrow(() -> new UserNotFoundException());
+
+        UUID currentUserId = getCurrentUserId();
+        Role userRole = getCurrentUserRole();
+
+        User projectManager = existingProject.getProjectManager();
+
+        boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
+        boolean isAdmin = userRole == Role.ADMIN;
+
+        if (!isAdmin && !isProjectManager) {
+            throw new AccessDeniedException("Only the assigned project manager or an admin can create task.");
+        }
+
         task.setState(TaskState.BACKLOG);
         task.setAssignee(assignee);
-        task.setProject(project);
+        task.setProject(existingProject);
         return taskRepository.save(task);
     }
 
@@ -90,16 +134,46 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Task updateTask(Task task) {
-        if (!taskRepository.existsById(task.getId())) {
-            throw new TaskNotFoundException();
+        Task existingTask = taskRepository.findById(task.getId())
+                .orElseThrow(TaskNotFoundException::new);
+
+        Project existingProject = projectRepository.findById(task.getProject().getId())
+                .orElseThrow(ProjectNotFoundException::new);
+
+        UUID currentUserId = getCurrentUserId();
+        Role userRole = getCurrentUserRole();
+
+        User projectManager = existingProject.getProjectManager();
+        boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
+        boolean isAdmin = userRole == Role.ADMIN;
+
+        if (!isAdmin && !isProjectManager) {
+            throw new AccessDeniedException("Only the assigned project manager or an admin can update this task.");
         }
+
         return taskRepository.save(task);
     }
 
     @Override
     public Task setTaskState(UUID id, TaskState state, String reason) throws TaskNotFoundException {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException());
+                .orElseThrow(TaskNotFoundException::new);
+
+        Project existingProject = projectRepository.findById(task.getProject().getId())
+                .orElseThrow(ProjectNotFoundException::new);
+
+        UUID currentUserId = getCurrentUserId();
+        Role userRole = getCurrentUserRole();
+
+        User projectManager = existingProject.getProjectManager();
+        boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
+        boolean isAdmin = userRole == Role.ADMIN;
+        boolean isAssignedTeamMember = userRole == Role.TEAM_MEMBER && task.getAssignee().getId().equals(currentUserId);
+
+        if (!isAdmin && !isProjectManager && !isAssignedTeamMember) {
+            throw new AccessDeniedException("Only the assigned project manager or an admin or assigned team member can update state.");
+        }
+
         if (task.getState() == TaskState.COMPLETED) {
             throw new NotAllowedStateException("Illegal State Exception");
         }
@@ -156,6 +230,14 @@ public class TaskServiceImpl implements TaskService{
                 .orElseThrow(() -> new TaskNotFoundException());
             task.setPriority(priority);
             return taskRepository.save(task);
+    }
+
+    @Override
+    public void deleteTask(UUID id) throws TaskNotFoundException {
+        if (!taskRepository.existsById(id)) {
+            throw new TaskNotFoundException();
+        }
+        taskRepository.deleteById(id);
     }
 
 

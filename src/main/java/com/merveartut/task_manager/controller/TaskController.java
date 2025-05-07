@@ -27,14 +27,14 @@ public class TaskController {
     }
 
     @PostMapping("/v1")
-    @PreAuthorize("hasRole('PROJECT_MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        System.out.println("rGJUGBJBGJBJB" + task);
+        System.out.println(task);
        return ResponseEntity.ok(taskService.createTask(task));
     }
 
     @GetMapping("/v1")
-    @PreAuthorize("hasRole('PROJECT_MANAGER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
     public ResponseEntity<List<Task>> getTasks () {
         return ResponseEntity.ok(taskService.listTasks());
     }
@@ -45,20 +45,26 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTaskById(id));
     }
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/v1/project/{projectId}")
     @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
     public List<Task> getTasksByProjectId(@PathVariable UUID projectId) {
         return taskService.getTasksByProjectId(projectId);
     }
 
-    @GetMapping
+    @GetMapping("/v1/user/{userId}")
     @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
-    public ResponseEntity<TaskState> getTaskState (@PathVariable UUID id) {
-        return ResponseEntity.ok(taskService.getTaskState(id));
+    public List<Task> getTasksByUserId(@PathVariable UUID userId) {
+        return taskService.getTasksByAssignee(userId);
     }
 
+//    @GetMapping
+//    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+//    public ResponseEntity<TaskState> getTaskState (@PathVariable UUID id) {
+//        return ResponseEntity.ok(taskService.getTaskState(id));
+//    }
+
     @PutMapping("/v1/update")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
     public ResponseEntity<Task> updateTask (@RequestBody Task task) {
         return ResponseEntity.ok(taskService.updateTask(task));
     }
@@ -82,6 +88,12 @@ public class TaskController {
         return ResponseEntity.ok(taskService.setTaskState(id, state, reason));
     }
 
+    @DeleteMapping("/v1")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    public ResponseEntity<Void> deleteTask (@RequestParam UUID id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException ex) {
         return ResponseEntity.status(404).body("Task not found");

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -37,6 +38,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         if (!jwtUtil.validateToken(token)) {
             System.out.println("Token validation failed.");
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
             return;
@@ -44,11 +46,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         String username = jwtUtil.extractUsername(token);
         Role role = jwtUtil.extractRole(token);
+        String userId = jwtUtil.extractUserId(token);
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(username, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.name())))
-        );
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(username, null, authorities);
+        authentication.setDetails(userId);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("Authentication set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
         chain.doFilter(request, response);
     }
 }

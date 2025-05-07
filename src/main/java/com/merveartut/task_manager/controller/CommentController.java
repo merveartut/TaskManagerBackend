@@ -38,7 +38,7 @@ public class CommentController {
     }
 
     @GetMapping("/v1/{id}")
-    @PreAuthorize("hasRole('PROJECT_MANAGER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
     public ResponseEntity<Comment> getCommentById(@PathVariable UUID id) {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }

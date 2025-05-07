@@ -44,33 +44,44 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll() // Allow login without authentication
-                        .requestMatchers("/api/users/v1/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/v1/project/{projectId}").hasAnyRole("PROJECT_MANAGER", "TEAM_LEADER", "TEAM_MEMBER")
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/v1").hasRole("PROJECT_MANAGER")
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/v1/task/{id}").hasAnyRole("PROJECT_MANAGER","TEAM_LEADER","TEAM_MEMBER")
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/change-password").authenticated()
 
-                        .requestMatchers(HttpMethod.POST,"/api/tasks/**").hasRole("PROJECT_MANAGER")
+                        .requestMatchers("/api/users/v1/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/users/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/v1/update-email").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/v1/update-name").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/v1/**").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/update").hasRole("PROJECT_MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/set-assignee").hasRole("TEAM_LEADER")
-                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-state").hasAnyRole("TEAM_LEADER","TEAM_MEMBER")
-                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-priority").hasAnyRole("TEAM_LEADER","PROJECT_MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/api/tasks/**").hasRole("PROJECT_MANAGER")
+
+                        .requestMatchers(HttpMethod.GET,"/api/tasks/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/tasks/**").permitAll()
+
+                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/update").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER")
+                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/set-assignee").hasAnyRole("ADMIN","TEAM_LEADER")
+                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-state").hasAnyRole("ADMIN","TEAM_LEADER","TEAM_MEMBER")
+                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-priority").hasAnyRole("ADMIN","TEAM_LEADER","PROJECT_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/tasks/**").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER")
 
                         .requestMatchers(HttpMethod.GET,"/api/projects/v1/team-members").permitAll()
-                        .requestMatchers("/api/projects/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/projects/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/projects/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/projects/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "api/projects/**").hasRole("ADMIN")
 
 
 
                         .requestMatchers(HttpMethod.POST,"/api/comments/v1/add-comment").permitAll()
 
-                        .requestMatchers(HttpMethod.GET,"/api/comments/v1/{id}").hasRole("PROJECT_MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/comments/v1/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/task").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/**").hasRole("PROJECT_MANAGER")
                         .requestMatchers("/api/attachments/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/projects/v1").hasRole("PROJECT_MANAGER")
                         .requestMatchers("/api/attachments/files/**").permitAll()
+                        .requestMatchers("/api/todos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

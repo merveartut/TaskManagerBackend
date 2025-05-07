@@ -1,5 +1,8 @@
 package com.merveartut.task_manager.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.merveartut.task_manager.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,11 +23,11 @@ public class User {
     private UUID id;
 
     private String name;
+    private String email;
     private String password;
 
-    @Enumerated(EnumType.STRING) // TEAM_MEMBER, TEAM_LEADER, PROJECT_MANAGER
+    @Enumerated(EnumType.STRING)
     private Role role;
-
 
     @OneToMany
     public List<Task> tasks;

@@ -1,6 +1,9 @@
 package com.merveartut.task_manager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.merveartut.task_manager.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +35,9 @@ public class Project {
 
     @ManyToMany
     private List<User> teamMembers;
+
+    @ManyToOne
+    private User projectManager;
 
     @OneToMany
     private List<Task> tasks;

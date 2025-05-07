@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -37,11 +38,36 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(user.getName(), user.getRole());
+        String token = jwtUtil.generateToken(user.getName(), user.getRole(), user.getId());
         return ResponseEntity.ok(Map.of(
                 "token", token,
-                "userId", user.getId().toString()
+                "userId", user.getId().toString(),
+                "role", user.getRole().toString()
         ));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> request, Principal principal) {
+        String oldPassword = request.get("oldPassword");
+        String newPassword = request.get("newPassword");
+
+        if (oldPassword == null || newPassword == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing fields");
+        }
+
+        User user = userRepository.findByName(principal.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+
+        System.out.println(user);
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));
     }
 
     @PostMapping("/register")

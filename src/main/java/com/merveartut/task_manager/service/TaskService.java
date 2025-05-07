@@ -35,4 +35,5 @@ public interface TaskService {
 
     Task setTaskPriority(UUID id, TaskPriority priority) throws TaskNotFoundException;
 
+    void deleteTask(UUID id) throws TaskNotFoundException;
 }

@@ -49,6 +49,22 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
+    @PutMapping("/v1/update-email")
+    public ResponseEntity<User> updateUserEmail(@RequestParam UUID id, @RequestParam String email) {
+        return ResponseEntity.ok(userService.updateUserEmail(id, email));
+    }
+
+    @PutMapping("/v1/update-name")
+    public ResponseEntity<User> updateUserName(@RequestParam UUID id, @RequestParam String name) {
+        return ResponseEntity.ok(userService.updateUserName(id, name));
+    }
+
+    @DeleteMapping("/v1")
+    public ResponseEntity<Void> deleteUser(@RequestParam UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleProjectNotFoundException(UserNotFoundException ex) {
         return ResponseEntity.status(404).body("Project not found");
