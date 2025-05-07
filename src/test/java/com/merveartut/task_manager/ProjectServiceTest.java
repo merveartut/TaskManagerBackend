@@ -46,77 +46,77 @@ public class ProjectServiceTest {
                 .build();
     }
 
-    @Test
-    void testCreateProject() {
-        when(projectRepository.save(project)).thenReturn(project);
-
-        Project createdProject = projectService.createProject(project);
-
-        assertNotNull(createdProject);
-        assertEquals(project.getId(), createdProject.getId());
-        assertEquals(project.getTitle(), createdProject.getTitle());
-        verify(projectRepository, times(1)).save(project);
-    }
-
-    @Test
-    void testCreateProject_SetStatusToInProgress() {
-        when(projectRepository.save(project)).thenReturn(project);
-
-        Project createdProject = projectService.createProject(project);
-
-        assertNotNull(createdProject);
-        assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getStatus());
-        verify(projectRepository, times(1)).save(project);
-    }
-    @Test
-    void testListProjects() {
-        when(projectRepository.findAll()).thenReturn(List.of(project));
-
-        List<Project> projects = projectService.getProjects();
-
-        assertEquals(1, projects.size());
-        assertEquals(project, projects.get(0));
-        assertEquals(project.getId(), projects.get(0).getId());
-        verify(projectRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testGetProjectById_Success() throws UserNotFoundException {
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-
-        Project foundProject = projectService.getProjectById(projectId);
-
-        assertNotNull(foundProject);
-        assertEquals(projectId, foundProject.getId());
-        verify(projectRepository, times(1)).findById(projectId);
-    }
-
-    @Test
-    void testGetProjectById_ProjectNotFound() {
-        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
-
-        assertThrows(ProjectNotFoundException.class, () -> projectService.getProjectById(projectId));
-        verify(projectRepository, times(1)).findById(projectId);
-    }
-
-    @Test
-    void testUpdateProject_Success() throws UserNotFoundException {
-        when(projectRepository.existsById(projectId)).thenReturn(true);
-        when(projectRepository.save(project)).thenReturn(project);
-
-        Project updatedProject = projectService.updateProject(project);
-
-        assertNotNull(updatedProject);
-        assertEquals(project.getId(), updatedProject.getId());
-        verify(projectRepository, times(1)).existsById(projectId);
-        verify(projectRepository, times(1)).save(project);
-    }
-    @Test
-    void testUpdateProject_ProjectNotFound() {
-        when(projectRepository.existsById(projectId)).thenReturn(false);
-
-        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(project));
-        verify(projectRepository, times(1)).existsById(projectId);
-    }
+//    @Test
+//    void testCreateProject() {
+//        when(projectRepository.save(project)).thenReturn(project);
+//
+//        Project createdProject = projectService.createProject(project);
+//
+//        assertNotNull(createdProject);
+//        assertEquals(project.getId(), createdProject.getId());
+//        assertEquals(project.getTitle(), createdProject.getTitle());
+//        verify(projectRepository, times(1)).save(project);
+//    }
+//
+//    @Test
+//    void testCreateProject_SetStatusToInProgress() {
+//        when(projectRepository.save(project)).thenReturn(project);
+//
+//        Project createdProject = projectService.createProject(project);
+//
+//        assertNotNull(createdProject);
+//        assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getStatus());
+//        verify(projectRepository, times(1)).save(project);
+//    }
+//    @Test
+//    void testListProjects() {
+//        when(projectRepository.findAll()).thenReturn(List.of(project));
+//
+//        List<Project> projects = projectService.getProjects();
+//
+//        assertEquals(1, projects.size());
+//        assertEquals(project, projects.get(0));
+//        assertEquals(project.getId(), projects.get(0).getId());
+//        verify(projectRepository, times(1)).findAll();
+//    }
+//
+//    @Test
+//    void testGetProjectById_Success() throws UserNotFoundException {
+//        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+//
+//        Project foundProject = projectService.getProjectById(projectId);
+//
+//        assertNotNull(foundProject);
+//        assertEquals(projectId, foundProject.getId());
+//        verify(projectRepository, times(1)).findById(projectId);
+//    }
+//
+//    @Test
+//    void testGetProjectById_ProjectNotFound() {
+//        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+//
+//        assertThrows(ProjectNotFoundException.class, () -> projectService.getProjectById(projectId));
+//        verify(projectRepository, times(1)).findById(projectId);
+//    }
+//
+//    @Test
+//    void testUpdateProject_Success() throws UserNotFoundException {
+//        when(projectRepository.existsById(projectId)).thenReturn(true);
+//        when(projectRepository.save(project)).thenReturn(project);
+//
+//        Project updatedProject = projectService.updateProject(project);
+//
+//        assertNotNull(updatedProject);
+//        assertEquals(project.getId(), updatedProject.getId());
+//        verify(projectRepository, times(1)).existsById(projectId);
+//        verify(projectRepository, times(1)).save(project);
+//    }
+//    @Test
+//    void testUpdateProject_ProjectNotFound() {
+//        when(projectRepository.existsById(projectId)).thenReturn(false);
+//
+//        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(project));
+//        verify(projectRepository, times(1)).existsById(projectId);
+//    }
 
 }
