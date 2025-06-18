@@ -32,19 +32,19 @@ public class CommentController {
     }
 
     @GetMapping("/v1")
-    @PreAuthorize("hasRole('PROJECT_MANAGER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('GUEST')")
     public ResponseEntity<List<Comment>> getComments() {
         return ResponseEntity.ok(commentService.listComments());
     }
 
     @GetMapping("/v1/{id}")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<Comment> getCommentById(@PathVariable UUID id) {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }
 
     @GetMapping("/v1/task")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<List<Comment>> getCommentsByTask(@RequestParam UUID taskId) {
         return ResponseEntity.ok(commentService.getCommentsByTask(taskId));
     }

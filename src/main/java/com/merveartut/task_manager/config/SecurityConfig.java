@@ -44,32 +44,33 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/change-password").authenticated()
 
                         .requestMatchers("/api/users/v1/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/users/v1/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/v1/**").hasAnyRole("ADMIN", "GUEST")
                         .requestMatchers(HttpMethod.PUT, "/api/users/v1/update-email").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/users/v1/update-name").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/v1/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/users/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/v1/**").hasAnyRole("ADMIN", "GUEST")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/v1/**").hasAnyRole("ADMIN", "GUEST")
 
 
                         .requestMatchers(HttpMethod.GET,"/api/tasks/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/tasks/**").permitAll()
 
-                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/update").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER")
-                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/set-assignee").hasAnyRole("ADMIN","TEAM_LEADER")
-                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-state").hasAnyRole("ADMIN","TEAM_LEADER","TEAM_MEMBER")
-                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-priority").hasAnyRole("ADMIN","TEAM_LEADER","PROJECT_MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/tasks/**").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER")
+                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/update").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER", "GUEST")
+                        .requestMatchers(HttpMethod.PUT,"/api/tasks/v1/set-assignee").hasAnyRole("ADMIN","TEAM_LEADER", "GUEST")
+                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-state").hasAnyRole("ADMIN","TEAM_LEADER","TEAM_MEMBER", "GUEST")
+                        .requestMatchers(HttpMethod.PUT, "/api/tasks/v1/set-priority").hasAnyRole("ADMIN","TEAM_LEADER","PROJECT_MANAGER", "GUEST")
+                        .requestMatchers(HttpMethod.DELETE,"/api/tasks/**").hasAnyRole("ADMIN","PROJECT_MANAGER", "TEAM_LEADER", "GUEST")
 
                         .requestMatchers(HttpMethod.GET,"/api/projects/v1/team-members").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/projects/v1/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/projects/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,"/api/projects/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "api/projects/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/projects/**").hasAnyRole("ADMIN", "GUEST")
+                        .requestMatchers(HttpMethod.PUT, "/api/projects/v1").hasAnyRole("GUEST", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/projects/**").hasAnyRole("GUEST", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "api/projects/**").hasAnyRole("ADMIN", "GUEST")
 
 
 
@@ -77,9 +78,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/task").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/comments/**").hasRole("PROJECT_MANAGER")
+                        .requestMatchers(HttpMethod.GET,"/api/comments/**").hasAnyRole("PROJECT_MANAGER", "GUEST")
                         .requestMatchers("/api/attachments/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/projects/v1").hasRole("PROJECT_MANAGER")
                         .requestMatchers("/api/attachments/files/**").permitAll()
                         .requestMatchers("/api/todos/**").permitAll()
                         .anyRequest().authenticated()
@@ -98,8 +98,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // Allow frontend
-        config.setAllowedOrigins(List.of("https://taskmanager-xuzz.onrender.com"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://taskmanager-xuzz.onrender.com"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         source.registerCorsConfiguration("/**", config);

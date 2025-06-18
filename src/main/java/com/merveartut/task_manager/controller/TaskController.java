@@ -27,32 +27,32 @@ public class TaskController {
     }
 
     @PostMapping("/v1")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         System.out.println(task);
        return ResponseEntity.ok(taskService.createTask(task));
     }
 
     @GetMapping("/v1")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<List<Task>> getTasks () {
         return ResponseEntity.ok(taskService.listTasks());
     }
 
     @GetMapping("/v1/task/{id}")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<Task> getTaskById (@PathVariable UUID id) {
         return ResponseEntity.ok(taskService.getTaskById(id));
     }
 
     @GetMapping("/v1/project/{projectId}")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public List<Task> getTasksByProjectId(@PathVariable UUID projectId) {
         return taskService.getTasksByProjectId(projectId);
     }
 
     @GetMapping("/v1/user/{userId}")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public List<Task> getTasksByUserId(@PathVariable UUID userId) {
         return taskService.getTasksByAssignee(userId);
     }
@@ -64,32 +64,32 @@ public class TaskController {
 //    }
 
     @PutMapping("/v1/update")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<Task> updateTask (@RequestBody Task task) {
         return ResponseEntity.ok(taskService.updateTask(task));
     }
 
 
     @PutMapping("/v1/set-assignee")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<Task> setTaskAssignee (@RequestParam UUID id, @RequestParam UUID userId) {
         return ResponseEntity.ok(taskService.setTaskAssignee(id, userId));
     }
 
     @PutMapping("/v1/set-priority")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<Task> setTaskPriority (@RequestParam UUID id, @RequestParam TaskPriority priority) {
         return ResponseEntity.ok(taskService.setTaskPriority(id, priority));
     }
 
     @PutMapping("/v1/set-state")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER')")
+    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<Task> setTaskState (@RequestParam UUID id, @RequestParam TaskState state, @RequestParam(required = false) String reason) {
         return ResponseEntity.ok(taskService.setTaskState(id, state, reason));
     }
 
     @DeleteMapping("/v1")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('GUEST')")
     public ResponseEntity<Void> deleteTask (@RequestParam UUID id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();

@@ -95,9 +95,10 @@ public class ProjectServiceImpl implements ProjectService{
 
         boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
         boolean isAdmin = userRole == Role.ADMIN;
+        boolean isGuest = userRole == Role.GUEST;
 
-        if (!isAdmin && !isProjectManager) {
-            throw new AccessDeniedException("Only the assigned project manager or an admin can update this project.");
+        if (!isAdmin && !isProjectManager && !isGuest) {
+            throw new AccessDeniedException("Only the assigned project manager or an admin or guest can update this project.");
         }
         existingProject.setTitle(project.getTitle());
         existingProject.setDescription(project.getDescription());

@@ -1,5 +1,6 @@
 package com.merveartut.task_manager.service;
 
+import com.merveartut.task_manager.enums.Role;
 import com.merveartut.task_manager.model.Comment;
 import com.merveartut.task_manager.model.Task;
 import com.merveartut.task_manager.model.User;
@@ -33,11 +34,17 @@ public class CommentServiceImpl implements CommentService {
     public Comment createComment(Comment comment) {
       Task task = taskRepository.findById(comment.getTask().getId())
               .orElseThrow(() -> new TaskNotFoundException());
-        User commenter = userRepository.findById(comment.getCommenter().getId())
-                .orElseThrow(() -> new UserNotFoundException());
-            comment.setTask(task);
-            comment.setCommenter(commenter);
-            return commentRepository.save(comment);
+      System.out.println(comment.getCommenter());
+      if (comment.getCommenter().getRole() == Role.GUEST ) {
+          comment.setTask(task);
+      } else {
+          User commenter = userRepository.findById(comment.getCommenter().getId())
+                  .orElseThrow(() -> new UserNotFoundException());
+          comment.setTask(task);
+          comment.setCommenter(commenter);
+      }
+        return commentRepository.save(comment);
+
     }
 
     @Override

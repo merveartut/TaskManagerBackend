@@ -1,5 +1,6 @@
 package com.merveartut.task_manager.controller;
 
+import com.merveartut.task_manager.enums.Role;
 import com.merveartut.task_manager.security.JwtUtil;
 import com.merveartut.task_manager.model.User;
 import com.merveartut.task_manager.repository.UserRepository;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -75,5 +78,15 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Hash password
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    @PostMapping("/guest-token")
+    public ResponseEntity<?> getGuestToken() {
+        String token = jwtUtil.generateToken("guestUser", Role.GUEST, UUID.randomUUID());
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("userId", UUID.randomUUID());
+        response.put("role", "GUEST");
+        return ResponseEntity.ok(response);
     }
 }
