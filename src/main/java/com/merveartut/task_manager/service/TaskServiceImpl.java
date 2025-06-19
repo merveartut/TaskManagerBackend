@@ -76,8 +76,9 @@ public class TaskServiceImpl implements TaskService{
 
         boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
         boolean isAdmin = userRole == Role.ADMIN;
+        boolean isGuest = userRole == Role.GUEST;
 
-        if (!isAdmin && !isProjectManager) {
+        if (!isAdmin && !isProjectManager && !isGuest) {
             throw new AccessDeniedException("Only the assigned project manager or an admin can create task.");
         }
 
@@ -146,8 +147,9 @@ public class TaskServiceImpl implements TaskService{
         User projectManager = existingProject.getProjectManager();
         boolean isProjectManager = projectManager != null && projectManager.getId().equals(currentUserId);
         boolean isAdmin = userRole == Role.ADMIN;
+        boolean isGuest = userRole == Role.GUEST;
 
-        if (!isAdmin && !isProjectManager) {
+        if (!isAdmin && !isProjectManager && !isGuest) {
             throw new AccessDeniedException("Only the assigned project manager or an admin can update this task.");
         }
 
