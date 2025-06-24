@@ -30,32 +30,27 @@ public class ProjectController {
     }
 
     @GetMapping("/v1")
-    @PreAuthorize("hasRole('PROJECT_MANAGER') or hasRole('GUEST')")
     public ResponseEntity<List<Project>> getProjects() {
         return ResponseEntity.ok(projectService.getProjects());
     }
 
     @GetMapping("/v1/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<Project> getProjectById(@PathVariable UUID id) {
         Project project = projectService.getProjectById(id);
         return ResponseEntity.ok(project);
     }
 
     @GetMapping("/v1/by-manager")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<List<Project>> getProjectsByManager(@RequestParam UUID userId) {
         return ResponseEntity.ok(projectService.getProjectsByManager(userId));
     }
 
     @GetMapping("/v1/by-team-member")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<List<Project>> getProjectsByTeamMember(@RequestParam UUID userId) {
         return ResponseEntity.ok(projectService.getProjectsByTeamMember(userId));
     }
 
     @GetMapping("/v1/team-members")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROJECT_MANAGER') or hasRole('TEAM_LEADER') or hasRole('TEAM_MEMBER') or hasRole('GUEST')")
     public ResponseEntity<List<User>> getProjectTeamMembers(@RequestParam UUID id) {
         return ResponseEntity.ok(projectService.getProjectTeamMembers(id));
     }

@@ -11,6 +11,5 @@ public interface TodoService {
 
     List<Todo> getTodosByTask(UUID taskId) throws TaskNotFoundException;
     Todo createTodo(Todo todo) throws TaskNotFoundException;
-    Todo updateTodo(Todo todo) throws TodoNotFoundException;
     Todo setCompletedState(UUID id, Boolean state) throws TodoNotFoundException;
 }

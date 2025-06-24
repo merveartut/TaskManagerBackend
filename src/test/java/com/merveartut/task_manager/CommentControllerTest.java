@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 public class CommentControllerTest {
 
-    @Mock
+    @MockBean
     private CommentService commentService;
 
     @Autowired
@@ -60,6 +61,7 @@ public class CommentControllerTest {
     private String teamLeaderToken;
     private String teamMemberToken;
     private String projectManagerToken;
+    private String adminToken;
 
     @BeforeEach
     void setUp() {
@@ -84,29 +86,29 @@ public class CommentControllerTest {
         teamLeaderToken = "Bearer " + jwtUtil.generateToken("teamLeaderUser", Role.TEAM_LEADER, commenterId).trim();
         teamMemberToken = "Bearer " + jwtUtil.generateToken("teamMemberUser", Role.TEAM_MEMBER, commenterId).trim();
         projectManagerToken = "Bearer " + jwtUtil.generateToken("projectManagerUser", Role.PROJECT_MANAGER, commenterId).trim();
-
+        adminToken = "Bearer " + jwtUtil.generateToken("adminUser", Role.ADMIN, commenterId).trim();
     }
 
-//    @Test
-//    void createComment_Success() throws Exception {
-//        when(commentService.createComment(comment)).thenReturn(comment);
-//
-//        mockMvc.perform(post("/api/comments/v1/add-comment")
-//                        .header("Authorization", projectManagerToken)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"text\":\"This is a test comment\", \"task\": {\"id\": \"" + taskId + "\"}, \"commenter\": {\"id\": \"" + commenterId + "\"}}"))
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void getComments_Success() throws Exception {
-//        when(commentService.listComments()).thenReturn(List.of(comment));
-//
-//        mockMvc.perform(get("/api/comments/v1")
-//                        .header("Authorization", projectManagerToken))
-//                .andExpect(status().isOk());
-//    }
-//
+    @Test
+    void createComment_Success() throws Exception {
+        when(commentService.createComment(comment)).thenReturn(comment);
+
+        mockMvc.perform(post("/api/comments/v1/add-comment")
+                        .header("Authorization", projectManagerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\":\"This is a test comment\", \"task\": {\"id\": \"" + taskId + "\"}, \"commenter\": {\"id\": \"" + commenterId + "\"}}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getComments_Success() throws Exception {
+        when(commentService.listComments()).thenReturn(List.of(comment));
+
+        mockMvc.perform(get("/api/comments/v1")
+                        .header("Authorization", projectManagerToken))
+                .andExpect(status().isOk());
+    }
+
 //    @Test
 //    void getComments_Unauthorized() throws Exception {
 //        mockMvc.perform(get("/api/comments/v1")
@@ -140,22 +142,22 @@ public class CommentControllerTest {
 //                .andExpect(status().isForbidden());
 //    }
 //
-//    @Test
-//    void getCommentsByTask_Success() throws Exception {
-//        when(commentService.getCommentsByTask(taskId)).thenReturn(List.of(comment));
-//
-//        mockMvc.perform(get("/api/comments/v1/task?taskId=" + taskId)
-//                        .header("Authorization", projectManagerToken))
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void getCommentsByTask_TaskNotFound() throws Exception {
-//        UUID invalidId = UUID.randomUUID();
-//        when(commentService.getCommentsByTask(invalidId)).thenThrow(new TaskNotFoundException());
-//
-//        mockMvc.perform(get("/api/comments/v1/task?taskId=" + invalidId)
-//                        .header("Authorization", projectManagerToken))
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    void getCommentsByTask_Success() throws Exception {
+        when(commentService.getCommentsByTask(taskId)).thenReturn(List.of(comment));
+
+        mockMvc.perform(get("/api/comments/v1/task?taskId=" + taskId)
+                        .header("Authorization", projectManagerToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCommentsByTask_TaskNotFound() throws Exception {
+        UUID invalidId = UUID.randomUUID();
+        when(commentService.getCommentsByTask(invalidId)).thenThrow(new TaskNotFoundException());
+
+        mockMvc.perform(get("/api/comments/v1/task?taskId=" + invalidId)
+                        .header("Authorization", projectManagerToken))
+                .andExpect(status().isNotFound());
+    }
 }

@@ -25,7 +25,7 @@ public class TodoServiceImpl implements TodoService{
     }
 
     @Override
-    public List<Todo> getTodosByTask(UUID taskId) throws TaskNotFoundException {
+    public List<Todo> getTodosByTask(UUID taskId) throws TodoNotFoundException {
         if (!taskRepository.existsById(taskId)) {
             throw new TaskNotFoundException();
         }
@@ -39,17 +39,10 @@ public class TodoServiceImpl implements TodoService{
             todo.setTask(task.get());
             return todoRepository.save(todo);
         } else {
-            throw new TaskNotFoundException();
+            throw new TodoNotFoundException();
         }
     }
 
-    @Override
-    public Todo updateTodo(Todo todo) throws TodoNotFoundException {
-        if (!todoRepository.existsById(todo.getId())) {
-            throw new TodoNotFoundException();
-        }
-        return todoRepository.save(todo);
-    }
 
     @Override
     public Todo setCompletedState(UUID id, Boolean state) throws TodoNotFoundException {
@@ -58,7 +51,7 @@ public class TodoServiceImpl implements TodoService{
             todo.get().setCompletedState(state);
             return todoRepository.save(todo.get());
         } else {
-            throw new TaskNotFoundException();
+            throw new TodoNotFoundException();
         }
     }
 

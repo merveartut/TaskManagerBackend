@@ -2,6 +2,7 @@ package com.merveartut.task_manager.controller;
 
 import com.merveartut.task_manager.model.Todo;
 import com.merveartut.task_manager.service.TodoService;
+import com.merveartut.task_manager.service.exception.TodoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +34,10 @@ public class TodoController {
     @PutMapping("/v1/update-state")
     public ResponseEntity<Todo> setCompletedState (@RequestParam UUID id, @RequestParam Boolean state) {
         return ResponseEntity.ok(todoService.setCompletedState(id, state));
+    }
+
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<String> handleTodoNotFoundException(TodoNotFoundException ex) {
+        return ResponseEntity.status(404).body("Todo not found");
     }
 }

@@ -3,6 +3,7 @@ package com.merveartut.task_manager.controller;
 import com.merveartut.task_manager.enums.Role;
 import com.merveartut.task_manager.model.User;
 import com.merveartut.task_manager.service.UserService;
+import com.merveartut.task_manager.service.exception.ProjectNotFoundException;
 import com.merveartut.task_manager.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -65,8 +66,13 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(ProjectNotFoundException.class)
     public ResponseEntity<String> handleProjectNotFoundException(UserNotFoundException ex) {
         return ResponseEntity.status(404).body("Project not found");
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(404).body("User not found");
     }
 }

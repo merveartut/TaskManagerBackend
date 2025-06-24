@@ -78,7 +78,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/v1/task").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/comments/**").hasAnyRole("PROJECT_MANAGER", "GUEST")
+                        .requestMatchers(HttpMethod.GET,"/api/comments/**").hasAnyRole("PROJECT_MANAGER", "GUEST", "ADMIN")
                         .requestMatchers("/api/attachments/**").permitAll()
                         .requestMatchers("/api/attachments/files/**").permitAll()
                         .requestMatchers("/api/todos/**").permitAll()
